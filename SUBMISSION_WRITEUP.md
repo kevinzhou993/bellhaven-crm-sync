@@ -6,4 +6,5 @@ I implemented the CHOW SOP as a separate approval action. When a facility is mov
 
 AI tools helped with scaffolding, API integration, edge-case brainstorming, and tests. I checked the output against the live website and CRM data, reviewed ambiguous same-address cases, and kept every write behind explicit human approval. With more time I would add API contract fixtures, stronger retry/recovery for a partially completed CHOW action, centralized audit logging, and notifications for new review items.
 
-**Actual focused time:** replace this line with your honest total before submitting.
+**Actual focused time:** approximately 3 hours.
+
