@@ -1,0 +1,17 @@
+name: Daily Bellhaven reconciliation
+on:
+  schedule:
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+jobs:
+  propose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: python pipeline.py
+        env:
+          CRM_TOKEN: ${{ secrets.CRM_TOKEN }}

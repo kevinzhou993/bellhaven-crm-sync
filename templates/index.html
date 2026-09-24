@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bellhaven CRM Review</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f5f2ea;color:#172b2a;margin:0}.wrap{max-width:1100px;margin:36px auto;padding:0 20px}
+    h1{margin-bottom:4px}.summary{color:#52605f;margin-bottom:24px}.card{background:white;border:1px solid #dedbd2;border-radius:10px;padding:20px;margin:16px 0}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:18px}.pill{display:inline-block;padding:4px 9px;border-radius:999px;background:#e9eee8;font-size:12px}
+    pre{background:#f7f7f4;padding:12px;border-radius:6px;white-space:pre-wrap}.approve,.reject{border:0;padding:9px 16px;border-radius:6px;color:white;cursor:pointer}
+    .approve{background:#16734f}.reject{background:#9b2c2c}.done{color:#52605f;font-weight:bold}.warning{background:#fff3cd;border-left:4px solid #d39e00;padding:10px}@media(max-width:700px){.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body><main class="wrap">
+  <h1>Bellhaven CRM Review Queue</h1>
+  <div class="summary">{{ pending|length }} pending · {{ decisions|length }} decided · nothing writes without approval</div>
+  {% for p in proposals %}
+  <section class="card">
+    <span class="pill">{{ p.action }}</span> <span class="pill">confidence {{ p.confidence }}</span>
+    <h2>{{ (p.location or p.account).name }}</h2>
+    {% if p.action == "chow" %}<p class="warning"><strong>CHOW safeguard:</strong> create a new Bellhaven account, preserve the historical account, then link it with <code>chow_current_account</code>.</p>{% endif %}
+    <div class="row">
+      <div><h3>Evidence</h3><ul>{% for item in p.evidence %}<li>{{ item }}</li>{% endfor %}</ul><p>{{ p.reason }}</p>
+      {% if p.account %}<details><summary>Current CRM record</summary><pre>{{ p.account|tojson(indent=2) }}</pre></details>{% endif %}</div>
+      <div><h3>Proposed change</h3><pre>{{ p.changes|tojson(indent=2) }}</pre></div>
+    </div>
+    {% if p.id in decisions %}<div class="done">Decision: {{ decisions[p.id].decision }}</div>
+    {% else %}<form method="post" action="{{ url_for('decide', proposal_id=p.id) }}">
+      <button class="approve" name="choice" value="approve">Approve & apply</button>
+      <button class="reject" name="choice" value="reject">Reject</button>
+    </form>{% endif %}
+  </section>
+  {% endfor %}
+</main></body></html>
