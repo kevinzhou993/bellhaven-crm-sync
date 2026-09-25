@@ -1,17 +1,32 @@
 name: Daily Bellhaven reconciliation
+
 on:
   schedule:
     - cron: "0 13 * * *"
   workflow_dispatch:
+
 jobs:
   propose:
     runs-on: ubuntu-latest
+    env:
+      CRM_TOKEN: ${{ secrets.CRM_TOKEN }}
     steps:
+      - name: Explain unconfigured sandbox
+        if: env.CRM_TOKEN == ''
+        run: echo "CRM_TOKEN is intentionally not configured; this workflow documents the daily production schedule."
+
       - uses: actions/checkout@v4
+        if: env.CRM_TOKEN != ''
+
       - uses: actions/setup-python@v5
+        if: env.CRM_TOKEN != ''
         with:
           python-version: "3.11"
-      - run: pip install -r requirements.txt
-      - run: python pipeline.py
-        env:
-          CRM_TOKEN: ${{ secrets.CRM_TOKEN }}
+
+      - name: Install dependencies
+        if: env.CRM_TOKEN != ''
+        run: pip install -r requirements.txt
+
+      - name: Generate review proposals
+        if: env.CRM_TOKEN != ''
+        run: python pipeline.py
